@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
   ArrowRight,
@@ -23,18 +23,28 @@ import {
   Code2,
   ChevronRight,
   ExternalLink,
+  Landmark,
+  MapPin,
+  Info,
 } from "lucide-react";
 import { useSessionStore } from "@/store/session";
 import { useThemeStore } from "@/store/theme";
 import { CoffeeCup3D } from "@/components/landing/CoffeeCup3D";
 import { AnimatedHeroVisual } from "@/components/landing/AnimatedHeroVisual";
 import { fadeInUp, staggerContainer, useCountUp } from "@/lib/motion";
+import { MOCK_GOVT_SCHEMES } from "@/lib/mock-data";
+
+// Note: Manually update this date when scheme data is refreshed.
+const LAST_CHECKED_DATE = "September 11, 2026";
+
 
 export default function ForStartupsPage() {
   const router = useRouter();
   const { currentUser } = useSessionStore();
   const { theme, toggleTheme } = useThemeStore();
   const isDarkMode = theme === "dark";
+
+  const [schemeTab, setSchemeTab] = useState<"NATIONAL" | "STATE">("NATIONAL");
 
   // Animated Stat Counts
   const activeChallengesCount = useCountUp(14, 800);
@@ -311,6 +321,223 @@ export default function ForStartupsPage() {
               );
             })}
           </motion.div>
+        </div>
+      </section>
+
+      {/* SECTION: GOVERNMENT SCHEMES YOU MAY BE ELIGIBLE FOR */}
+      <section className="py-16 lg:py-20 border-b border-slate-200/40 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          {/* Header & Disclaimer */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2 max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold bg-blue-500/10 text-[#2F5FEA] dark:bg-blue-500/20 dark:text-blue-300 border border-blue-500/20">
+                <Landmark className="w-3.5 h-3.5" />
+                <span>Public Funding Directory</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                {/* Note: Manually update this date when scheme data is refreshed. */}
+                <span className="text-slate-500 dark:text-slate-400 font-medium">
+                  Last checked: {LAST_CHECKED_DATE}
+                </span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                Government Schemes You May Be Eligible For
+              </h2>
+
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex items-start gap-2 pt-1">
+                <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                <span>
+                  Figures and application windows change frequently — always confirm current status on the official site before applying.
+                </span>
+              </p>
+            </div>
+
+            {/* Segmented Toggle: National vs By State */}
+            <div className="flex items-center p-1 bg-slate-200/80 dark:bg-slate-800 rounded-xl border border-slate-300/60 dark:border-slate-700/60 shrink-0 self-start md:self-auto">
+              <button
+                type="button"
+                onClick={() => setSchemeTab("NATIONAL")}
+                className={`px-4 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                  schemeTab === "NATIONAL"
+                    ? "bg-[#2F5FEA] text-white shadow-md"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <Landmark className="w-3.5 h-3.5" />
+                <span>National Schemes</span>
+                <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-white/20">
+                  {MOCK_GOVT_SCHEMES.filter((s) => s.category === "NATIONAL").length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSchemeTab("STATE")}
+                className={`px-4 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                  schemeTab === "STATE"
+                    ? "bg-[#2F5FEA] text-white shadow-md"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                <span>By State</span>
+                <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-white/20">
+                  {MOCK_GOVT_SCHEMES.filter((s) => s.category === "STATE").length}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Cards Content with Crossfade Tab Switching */}
+          <AnimatePresence mode="wait">
+            {schemeTab === "NATIONAL" ? (
+              <motion.div
+                key="national-schemes"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+              >
+                <motion.div
+                  variants={staggerContainer}
+                  initial="initial"
+                  animate="animate"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                  {MOCK_GOVT_SCHEMES.filter((s) => s.category === "NATIONAL").map((scheme) => (
+                    <motion.div
+                      key={scheme.id}
+                      variants={fadeInUp}
+                      className={`p-6 rounded-2xl border flex flex-col justify-between transition-all duration-200 hover:shadow-lg ${
+                        isDarkMode
+                          ? "bg-slate-900/90 border-slate-800 hover:border-slate-700"
+                          : "bg-white border-slate-200/90 shadow-sm hover:border-blue-200"
+                      }`}
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-blue-500/10 text-[#2F5FEA] dark:bg-blue-500/20 dark:text-blue-300 border border-blue-500/20">
+                            Run by {scheme.agency}
+                          </span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
+                            External Program
+                          </span>
+                        </div>
+
+                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug">
+                          {scheme.name}
+                        </h3>
+
+                        <div className="space-y-2 pt-1">
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <strong className="font-bold text-slate-800 dark:text-slate-200">
+                              Benefit:{" "}
+                            </strong>
+                            {scheme.benefits}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            <strong className="font-bold text-slate-700 dark:text-slate-300">
+                              Eligible:{" "}
+                            </strong>
+                            {scheme.eligibility}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 italic">
+                          External program — not run by InnovateGov
+                        </span>
+                        <a
+                          href={scheme.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2F5FEA] dark:text-blue-400 hover:underline transition-all"
+                        >
+                          <span>Learn more</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="state-schemes"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-6"
+              >
+                <motion.div
+                  variants={staggerContainer}
+                  initial="initial"
+                  animate="animate"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                  {MOCK_GOVT_SCHEMES.filter((s) => s.category === "STATE").map((scheme) => (
+                    <motion.div
+                      key={scheme.id}
+                      variants={fadeInUp}
+                      className={`p-6 rounded-2xl border flex flex-col justify-between transition-all duration-200 hover:shadow-lg ${
+                        isDarkMode
+                          ? "bg-slate-900/90 border-slate-800 hover:border-slate-700"
+                          : "bg-white border-slate-200/90 shadow-sm hover:border-blue-200"
+                      }`}
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            <span>{scheme.state}</span>
+                          </span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
+                            Run by {scheme.agency}
+                          </span>
+                        </div>
+
+                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug">
+                          {scheme.name}
+                        </h3>
+
+                        <div className="space-y-2 pt-1">
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <strong className="font-bold text-slate-800 dark:text-slate-200">
+                              Benefit:{" "}
+                            </strong>
+                            {scheme.benefits}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            <strong className="font-bold text-slate-700 dark:text-slate-300">
+                              Eligible:{" "}
+                            </strong>
+                            {scheme.eligibility}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 italic">
+                          External program — not run by InnovateGov
+                        </span>
+                        <a
+                          href={scheme.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2F5FEA] dark:text-blue-400 hover:underline transition-all"
+                        >
+                          <span>Learn more</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 

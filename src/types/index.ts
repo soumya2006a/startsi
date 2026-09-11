@@ -111,3 +111,15 @@ export interface Application {
   pilot?: Pilot;
   recommendation?: Recommendation;
 }
+
+export interface GovtScheme {
+  id: string;
+  name: string;
+  agency: string;
+  benefits: string;
+  eligibility: string;
+  link: string;
+  category: "NATIONAL" | "STATE";
+  state?: string;
+}
+
