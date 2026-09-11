@@ -82,7 +82,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 
   const roles: { role: Role; label: string }[] = [
     { role: "GOVERNMENT", label: "Govt Officer" },
-    { role: "STARTUP", label: "Entrepreneur" },
+    { role: "STARTUP", label: "Startup" },
     { role: "EVALUATOR", label: "Evaluator" },
   ];
 

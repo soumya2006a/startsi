@@ -74,7 +74,7 @@ export default function LoginPage() {
     // Sign up is for Startups only. If switching to Government or Evaluator during Sign Up, revert to Sign In.
     if (authMode === "SIGN_UP" && role !== "STARTUP") {
       setAuthMode("SIGN_IN");
-      setErrorMsg("Government & Evaluator accounts are invite-only. Sign Up is for Startups & Entrepreneurs.");
+      setErrorMsg("Government & Evaluator accounts are invite-only. Sign Up is for Startups.");
     } else {
       setErrorMsg(null);
     }
@@ -159,7 +159,7 @@ export default function LoginPage() {
                 InnovateGov
               </h1>
               <p className="text-[11px] text-slate-400 font-medium tracking-wide">
-                Government · Entrepreneurs · Better Tomorrow
+                Government · Startups · Better Tomorrow
               </p>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function LoginPage() {
               href="/for-startups"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition-all backdrop-blur-xs"
             >
-              <span>For Entrepreneur</span>
+              <span>For Startups</span>
               <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
             </Link>
           </div>
@@ -194,7 +194,7 @@ export default function LoginPage() {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="text-2xl lg:text-3xl font-extrabold text-white leading-tight tracking-tight"
           >
-            Connecting Government Challenges with Entrepreneur Innovations
+            Connecting Government Challenges with Startup Innovations
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 12 }}
@@ -254,7 +254,7 @@ export default function LoginPage() {
             </div>
             {authMode === "SIGN_UP" && (
               <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-500/10 text-[#2F5FEA] border border-blue-500/20">
-                Startups & Entrepreneurs Only
+                Startups Only
               </span>
             )}
           </div>
@@ -486,7 +486,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <span>{authMode === "SIGN_IN" ? "Sign In to Workspace" : "Create Entrepreneur Account"}</span>
+                  <span>{authMode === "SIGN_IN" ? "Sign In to Workspace" : "Create Startup Account"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
