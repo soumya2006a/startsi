@@ -45,9 +45,9 @@ const navItems: NavItem[] = [
 
 const startupNavItems: NavItem[] = [
   { label: "Dashboard", href: "/startup/dashboard", icon: LayoutDashboard },
-  { label: "Browse Challenges", href: "/startup/challenges", icon: Target },
-  { label: "My Applications", href: "/startup/applications", icon: FileText, badge: 3 },
-  { label: "My Pilots", href: "/startup/pilots", icon: Rocket },
+  { label: "Funding Application", href: "/startup/apply", icon: FileText },
+  { label: "Status Tracker", href: "/startup/status", icon: Rocket, badge: "Live" },
+  { label: "Open Challenges", href: "/startup/challenges", icon: Target },
   { label: "Settings", href: "/startup/settings", icon: Settings },
 ];
 

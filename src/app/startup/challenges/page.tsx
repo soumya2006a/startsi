@@ -261,10 +261,10 @@ export default function StartupChallengesPage() {
                   </button>
                 ) : (
                   <Link
-                    href={`/startup/challenges/${item.id}/apply`}
-                    className="py-2.5 px-4 rounded-xl bg-[#2F5FEA] hover:bg-[#234BCB] text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5"
+                    href="/startup/status"
+                    className="py-2.5 px-4 rounded-xl bg-[#8C634B] hover:bg-[#724E38] text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
                   >
-                    <span>Apply Now</span>
+                    <span>View Wishlist Status</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 )}
