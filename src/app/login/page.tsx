@@ -33,7 +33,7 @@ import { fadeInUp, staggerContainer } from "@/lib/motion";
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useSessionStore();
+  const { login, currentUser, hasHydrated } = useSessionStore();
   const { theme, toggleTheme } = useThemeStore();
   const isDarkMode = theme === "dark";
 
@@ -48,6 +48,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [googleLoading, setGoogleLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Auto-redirect if user is already authenticated
+  useEffect(() => {
+    if (!hasHydrated) return;
+    if (currentUser) {
+      if (currentUser.role === "STARTUP") {
+        router.replace("/startup/dashboard");
+      } else {
+        router.replace("/dashboard");
+      }
+    }
+  }, [currentUser, hasHydrated, router]);
 
   // Sync with searchParams on mount (e.g. /login?role=STARTUP)
   useEffect(() => {
@@ -318,13 +330,13 @@ export default function LoginPage() {
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
                 Select Portal Role
               </label>
-              <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-100/80 dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-1.5 p-1.5 bg-[#FAF8F5] dark:bg-[#1A1715] rounded-xl border border-[#EFECE6] dark:border-[#332D28]">
                 <button
                   type="button"
                   onClick={() => handleRoleChange("GOVERNMENT")}
-                  className={`py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 ${
+                  className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     selectedRole === "GOVERNMENT"
-                      ? "bg-[#2F5FEA] text-white shadow-md shadow-blue-500/20"
+                      ? "bg-[#8C634B] text-white shadow-md"
                       : "text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-slate-200/50"
                   }`}
                 >
@@ -335,27 +347,14 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => handleRoleChange("STARTUP")}
-                  className={`py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 ${
+                  className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     selectedRole === "STARTUP"
-                      ? "bg-[#2F5FEA] text-white shadow-md shadow-blue-500/20"
+                      ? "bg-[#8C634B] text-white shadow-md"
                       : "text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-slate-200/50"
                   }`}
                 >
                   <Rocket className="w-3.5 h-3.5" />
                   <span>Startup</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleRoleChange("EVALUATOR")}
-                  className={`py-2 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 ${
-                    selectedRole === "EVALUATOR"
-                      ? "bg-[#2F5FEA] text-white shadow-md shadow-blue-500/20"
-                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-slate-200/50"
-                  }`}
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  <span>Evaluator</span>
                 </button>
               </div>
             </motion.div>

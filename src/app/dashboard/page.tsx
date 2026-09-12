@@ -58,6 +58,11 @@ export default function DashboardPage() {
       return;
     }
 
+    if (currentUser.role === "STARTUP") {
+      router.replace("/startup/dashboard");
+      return;
+    }
+
     // Set time-based greeting
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good Morning");

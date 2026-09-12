@@ -13,7 +13,11 @@ export default function RootPage() {
     if (!hasHydrated) return; // Wait for Zustand persist rehydration from localStorage
 
     if (currentUser) {
-      router.replace("/dashboard");
+      if (currentUser.role === "STARTUP") {
+        router.replace("/startup/dashboard");
+      } else {
+        router.replace("/dashboard");
+      }
     } else {
       router.replace("/login");
     }

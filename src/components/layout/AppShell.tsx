@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { useThemeStore } from "@/store/theme";
+import { AiAssistantWidget } from "@/components/ai/AiAssistantWidget";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -25,14 +26,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (isPublicPage) {
     return (
-      <main className={`w-full min-h-screen ${theme === "dark" ? "dark bg-[#0B1120] text-slate-100" : "bg-slate-50 text-slate-900"}`}>
+      <main className={`w-full min-h-screen ${theme === "dark" ? "dark bg-[#141210] text-slate-100" : "bg-[#FBF9F4] text-slate-900"}`}>
         <PageTransition>{children}</PageTransition>
+        <AiAssistantWidget />
       </main>
     );
   }
 
   return (
-    <div className={`flex flex-row h-screen w-full overflow-hidden antialiased ${theme === "dark" ? "dark bg-[#0B1120] text-slate-100" : "bg-[#F5F6FA] text-slate-900"}`}>
+    <div className={`flex flex-row h-screen w-full overflow-hidden antialiased ${theme === "dark" ? "dark bg-[#141210] text-slate-100" : "bg-[#FBF9F4] text-slate-900"}`}>
       <Sidebar
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
@@ -43,6 +45,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <PageTransition>{children}</PageTransition>
         </main>
       </div>
+      <AiAssistantWidget />
     </div>
   );
 }

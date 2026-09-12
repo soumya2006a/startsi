@@ -29,6 +29,8 @@ import {
 } from "recharts";
 import { fadeInUp, staggerContainer, useCountUp } from "@/lib/motion";
 import { MOCK_DEPARTMENTS } from "@/lib/mock-data";
+import { useSessionStore } from "@/store/session";
+import { useRouter } from "next/navigation";
 
 // Note: Static illustrative value until backend timestamp-diffing telemetry is live
 const AVG_TIME_TO_PILOT_DAYS = 18;
@@ -92,12 +94,22 @@ const allocationData = [
 ];
 
 export default function ReportsPage() {
+  const router = useRouter();
+  const { currentUser, hasHydrated } = useSessionStore();
   const [mounted, setMounted] = useState(false);
   const [timeframe, setTimeframe] = useState<TimeframeOption>("Quarter");
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
+  }, [currentUser, hasHydrated, router]);
 
   const totalBudget = useCountUp(240, 800);
   const avgScore = useCountUp(81.4, 800);

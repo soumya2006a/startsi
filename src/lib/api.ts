@@ -10,6 +10,12 @@ import {
   Decision,
   Application,
   ApplicationStatus,
+  FundingApplication,
+  WishlistMatch,
+  Verification,
+  VerificationVerdict,
+  FacilitationRecord,
+  FacilitationStage,
 } from "@/types";
 import {
   MOCK_USERS,
@@ -20,6 +26,10 @@ import {
   MOCK_PILOTS,
   MOCK_DECISIONS,
   MOCK_DEPARTMENTS,
+  MOCK_FUNDING_APPLICATIONS,
+  MOCK_WISHLIST_MATCHES,
+  MOCK_VERIFICATIONS,
+  MOCK_FACILITATION_RECORDS,
 } from "./mock-data";
 
 // Helper to simulate API network delay (300ms - 600ms)
@@ -34,6 +44,10 @@ let evaluationsStore = [...MOCK_EVALUATIONS];
 let pilotsStore = JSON.parse(JSON.stringify(MOCK_PILOTS)) as Pilot[];
 let decisionsStore = [...MOCK_DECISIONS];
 let recommendationsStore = [...MOCK_RECOMMENDATIONS];
+let fundingApplicationsStore = [...MOCK_FUNDING_APPLICATIONS];
+let wishlistMatchesStore = [...MOCK_WISHLIST_MATCHES];
+let verificationsStore = [...MOCK_VERIFICATIONS];
+let facilitationRecordsStore = [...MOCK_FACILITATION_RECORDS];
 
 export async function login(
   email: string,
@@ -619,5 +633,143 @@ export async function getMyApplicationDetail(
 
   return delay(founderApp);
 }
+
+// ==========================================
+// FUNDING WISHLIST & FACILITATION API HELPERS
+// ==========================================
+
+export async function submitFundingApplication(
+  data: Omit<FundingApplication, "id" | "submittedAt" | "status">
+): Promise<FundingApplication> {
+  const newApp: FundingApplication = {
+    ...data,
+    id: `fa-${Date.now()}`,
+    status: "PENDING",
+    submittedAt: new Date().toISOString(),
+  };
+
+  fundingApplicationsStore.unshift(newApp);
+  return delay(newApp);
+}
+
+export async function getFundingApplicationByStartup(
+  startupId: string
+): Promise<FundingApplication | null> {
+  const app = fundingApplicationsStore.find((fa) => fa.startupId === startupId);
+  return delay(app || null);
+}
+
+export async function getWishlistMatches(challengeId: string): Promise<
+  (WishlistMatch & {
+    fundingApplication?: FundingApplication;
+    startup?: Startup;
+  })[]
+> {
+  const matches = wishlistMatchesStore.filter(
+    (wm) => wm.challengeId === challengeId
+  );
+
+  const joined = matches.map((wm) => {
+    const fundingApplication = fundingApplicationsStore.find(
+      (fa) => fa.id === wm.fundingApplicationId
+    );
+    const startup = fundingApplication
+      ? MOCK_STARTUPS.find((s) => s.id === fundingApplication.startupId)
+      : undefined;
+
+    return {
+      ...wm,
+      fundingApplication,
+      startup,
+    };
+  });
+
+  // Sort by matchScore descending
+  joined.sort((a, b) => b.matchScore - a.matchScore);
+  return delay(joined);
+}
+
+export async function getVerification(
+  wishlistMatchId: string
+): Promise<Verification | null> {
+  const ver = verificationsStore.find(
+    (v) => v.wishlistMatchId === wishlistMatchId
+  );
+  return delay(ver || null);
+}
+
+export async function updateVerification(
+  id: string,
+  field: "identityStatus" | "technicalStatus",
+  verdict: VerificationVerdict
+): Promise<Verification> {
+  const existing = verificationsStore.find((v) => v.id === id);
+  if (!existing) {
+    throw new Error(`Verification with id ${id} not found.`);
+  }
+
+  existing[field] = verdict;
+  if (field === "identityStatus") existing.identityReviewedBy = "usr-4";
+  if (field === "technicalStatus") existing.technicalReviewedBy = "usr-4";
+
+  return delay({ ...existing });
+}
+
+export async function getFacilitationPipeline(): Promise<
+  (FacilitationRecord & {
+    verification?: Verification;
+    wishlistMatch?: WishlistMatch;
+    startup?: Startup;
+    challenge?: Challenge;
+  })[]
+> {
+  const joined = facilitationRecordsStore.map((fac) => {
+    const verification = verificationsStore.find(
+      (v) => v.id === fac.verificationId
+    );
+    const wishlistMatch = verification
+      ? wishlistMatchesStore.find((wm) => wm.id === verification.wishlistMatchId)
+      : undefined;
+    const challenge = wishlistMatch
+      ? challengesStore.find((c) => c.id === wishlistMatch.challengeId)
+      : undefined;
+    const fundingApp = wishlistMatch
+      ? fundingApplicationsStore.find((fa) => fa.id === wishlistMatch.fundingApplicationId)
+      : undefined;
+    const startup = fundingApp
+      ? MOCK_STARTUPS.find((s) => s.id === fundingApp.startupId)
+      : undefined;
+
+    return {
+      ...fac,
+      verification,
+      wishlistMatch,
+      startup,
+      challenge,
+    };
+  });
+
+  return delay(joined);
+}
+
+export async function updateFacilitationStage(
+  id: string,
+  stage: FacilitationStage,
+  extra?: { governmentContact?: string; fundingAmountSecured?: number; notes?: string }
+): Promise<FacilitationRecord> {
+  const existing = facilitationRecordsStore.find((f) => f.id === id);
+  if (!existing) {
+    throw new Error(`FacilitationRecord with id ${id} not found.`);
+  }
+
+  existing.stage = stage;
+  existing.updatedAt = new Date().toISOString();
+  if (extra?.governmentContact !== undefined) existing.governmentContact = extra.governmentContact;
+  if (extra?.fundingAmountSecured !== undefined) existing.fundingAmountSecured = extra.fundingAmountSecured;
+  if (extra?.notes !== undefined) existing.notes = extra.notes;
+
+  return delay({ ...existing });
+}
+
 
 
